@@ -67,9 +67,9 @@ public class LoadLolCat extends AsyncTask<String, Integer, Bitmap> {
         String responseURL = String.format("%s?method=%s&format=rest&tags=%s&api_key=%s&privacy_filter=%s&content_type=%s&sort=%s",
                 flickrURL, flickrMethod, flickrSearchTags, flickrAPI, flickrPrivacyFilter, flickrContentType, flickrSort);
 
-        FlickrPhoto photo = getFlickrImages(responseURL);
+        List<FlickrPhoto> photos = getFlickrImages(responseURL);
 
-        return getRandomFlickrPhoto(photo);
+        return getRandomFlickrPhoto(photos);
     }
 
     @Override
@@ -81,10 +81,10 @@ public class LoadLolCat extends AsyncTask<String, Integer, Bitmap> {
 
     /*
      * Using Using flickr api url passed in, get xml response and parse through creating
-     * a list of FlickrPhoto objects conatining information about each photo returned, then
-     * return the a random FlickrPhoto from the list FlickrPhoto objects
+     * a list of FlickrPhoto objects containing information about each photo returned, then
+     * return the list of FlickrPhoto objects
     */
-    FlickrPhoto getFlickrImages(String responseURL) {
+    List<FlickrPhoto> getFlickrImages(String responseURL) {
         DefaultHttpClient httpClient = new DefaultHttpClient();
         HttpEntity httpEntity = null;
         HttpResponse httpResponse = null;
@@ -143,18 +143,18 @@ public class LoadLolCat extends AsyncTask<String, Integer, Bitmap> {
             e.printStackTrace();
         }
 
-        FlickrPhoto pReturn = photos.get(rand.nextInt(photos.size()));
-
-        return pReturn;
+        return photos;
     }
 
     /*
-     * Using the Photo object passed in retrive the image it corrisponds to
-     * through the flickr api and return the Bitmap of the image
+     * Using the list of FlickrPhoto objects passed in, choose one and random and retrieve
+     * the image it corresponds to through the flickr api returning the Bitmap of the image
      */
-    Bitmap getRandomFlickrPhoto(FlickrPhoto photo)
+    Bitmap getRandomFlickrPhoto(List<FlickrPhoto> photos)
     {
         Bitmap image = null;
+
+        FlickrPhoto photo = photos.get(rand.nextInt(photos.size()));
 
         String imageURL = String.format("http://farm%s.staticflickr.com/%s/%s_%s.jpg",
                 photo.getFarm(), photo.getServer(), photo.getId(), photo.getSecret());
